@@ -1,7 +1,7 @@
 # YoutubeDownloader
 Standalone exe program to download Youtube videos using their URL\
 \
-![Screenshot (43)](![image](https://github.com/mohitkumar36/YoutubeDownloader/assets/57846872/08dcbce0-9cb5-444f-aed3-86d4512b05b4)
+![Screenshot (43)]((https://github.com/mohitkumar36/YoutubeDownloader/assets/57846872/08dcbce0-9cb5-444f-aed3-86d4512b05b4)
 )
 
 A Python based exe program built using **pyinstaller**. \
