@@ -63,6 +63,9 @@ def download():
         if download_Folder:
             download_Folder += '/'
 
+        title = YT.title
+        title = ''.join(letter for letter in title if letter.isalnum())
+
         # download audio only
         video = YT.streams.filter(abr="160kbps", progressive=False).first()
         video.download(download_Folder, filename="audio.mp3")
@@ -72,16 +75,20 @@ def download():
         video.download(download_Folder, filename="video.mp4")
         print("\nVideo download success")
 
-        audio = ffmpeg.input(f"{download_Folder}audio.mp3")
+        try:
+            #f'ffmpeg -i {download_Folder}video.mp4 -i {download_Folder}audio.mp3 -c:v copy -c:a copy {download_Folder+title}.mp4'
+            subprocess.run(['ffmpeg', '-i', download_Folder+'video.mp4', '-i', download_Folder + "audio.mp3", "-c:v", "copy", "-c:a", "copy", download_Folder+title+'.mp4'], check=True)
+        except:
+            # print ('wrongcommand does not exist')
+            audio = ffmpeg.input(f"{download_Folder}audio.mp3")
 
-        #download video only
+            #download video only
 
-        video = ffmpeg.input(f"{download_Folder}video.mp4")
+            video = ffmpeg.input(f"{download_Folder}video.mp4")
 
-        title = YT.title
-        title = ''.join(letter for letter in title if letter.isalnum())
+            
 
-        ffmpeg.output(audio, video, f"{download_Folder}{title}.mp4").run(overwrite_output=True)
+            ffmpeg.output(audio, video, f"{download_Folder}{title}.mp4").run(overwrite_output=True)
 
         os.remove(f"{download_Folder}audio.mp3")
         os.remove(f"{download_Folder}video.mp4")
