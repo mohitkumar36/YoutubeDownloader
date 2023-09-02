@@ -1,13 +1,11 @@
 # YoutubeDownloader
 
-Standalone exe program to download Youtube videos using their URL\
-\
-<img src="https://github.com/mohitkumar36/YoutubeDownloader/assets/57846872/b62788a6-42bd-4f8c-87a4-3f2f8f259439" width="400" height="250">
+Standalone exe program to download Youtube videos using their URL
 
 
 Here is a new and update UI with more power compared to the previous UI
 
-<img src="https://github.com/mohitkumar36/YoutubeDownloader/assets/57846872/bc469b3b-2edf-40fd-b597-0032ba2b1249" width="450" height="340">
+<img src="https://github.com/mohitkumar36/YoutubeDownloader/assets/57846872/e47596f6-58fd-4c87-9548-d17e14e871a0" width="520" height="340">
 
 
 A Python based exe program built using **pyinstaller**. \
