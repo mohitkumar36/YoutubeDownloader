@@ -42,6 +42,11 @@ def download():
 
     RES = clicked.get()
 
+    if not url.get():
+        messagebox.showinfo("Error",
+                            "Enter a download link")
+        return
+
     download_Folder = dest.get()
 
     if RES == "audio":
@@ -75,9 +80,25 @@ def download():
         video.download(download_Folder, filename="video.mp4")
         print("\nVideo download success")
 
+        language = ''
+        for caption in YT.caption_tracks:
+            if caption.name in ['English - en', 'en', 'English', 'english']:
+                language = caption.name
+                en_caption = caption
+        # print(en_caption.xml_captions)
+
+        if language: 
+        # Instead of Captions in XML format we are converting it to string format.
+            en_caption_convert_to_srt = (en_caption.generate_srt_captions())
+            with open(download_Folder+'subs.srt', "w", encoding="utf-8") as f:
+                f.write(en_caption_convert_to_srt)
+
         try:
             #f'ffmpeg -i {download_Folder}video.mp4 -i {download_Folder}audio.mp3 -c:v copy -c:a copy {download_Folder+title}.mp4'
-            subprocess.run(['ffmpeg', '-i', download_Folder+'video.mp4', '-i', download_Folder + "audio.mp3", "-c:v", "copy", "-c:a", "copy", download_Folder+title+'.mp4'], check=True)
+            if language:
+                subprocess.run(['ffmpeg', '-i', download_Folder+'video.mp4', '-i',  download_Folder+"audio.mp3",'-i', download_Folder+'subs.srt' ,"-c:v", "copy", "-c:a", "copy", '-c:s', 'mov_text', download_Folder+title+'.mp4'], check=True)
+            else:
+                subprocess.run(['ffmpeg', '-i', download_Folder+'video.mp4', '-i', download_Folder + "audio.mp3", "-c:v", "copy", "-c:a", "copy", download_Folder+title+'.mp4'], check=True)
         except:
             # print ('wrongcommand does not exist')
             audio = ffmpeg.input(f"{download_Folder}audio.mp3")
@@ -88,10 +109,12 @@ def download():
 
             
 
-            ffmpeg.output(audio, video, f"{download_Folder}{title}.mp4").run(overwrite_output=True)
+            ffmpeg.output(audio, video, f"{download_Folder}{title}.mp4", vcodec='copy', acodec='copy').run(overwrite_output=True)
 
         os.remove(f"{download_Folder}audio.mp3")
         os.remove(f"{download_Folder}video.mp4")
+        if language:
+            os.remove(f"{download_Folder}subs.srt")
         messagebox.showinfo("SUCCESSFULLY",
                             "DOWNLOADED AND SAVED IN\n"
                             + download_Folder)
@@ -100,13 +123,13 @@ def download():
 def videodetails():
     link = url.get()
     if not link:
-        messagebox.showinfo("ERROR",
+        messagebox.showinfo("Error",
                             "Enter a link")
         return
     try:
         yt = pytube.YouTube(link, on_progress_callback=progress)
     except:
-        messagebox.showinfo("ERROR",
+        messagebox.showinfo("Error",
                             "Enter a valid link")
         return
 
@@ -123,10 +146,8 @@ def videodetails():
             if quality in str(e):
                 resolutions.add(quality)
 
-    def show(x):
-        clicked.set(x)
 
-    resolutions = list(resolutions)
+    resolutions = sorted(list(resolutions), key= lambda x:(len(x), x))
 
     clicked.set('')
     qualitySelect['menu'].delete(0, 'end')
@@ -160,6 +181,8 @@ root.resizable(False, False)
 root.title("Youtube Downloader")
 root.eval('tk::PlaceWindow . center')
 #root.config(background="#e87878")
+
+root.option_add( "*font", "lucida 10" )
 
 #labels
 label1 = tk.Label(root, 
@@ -197,7 +220,7 @@ browse = tk.Button(root,
 
 download = tk.Button(root, 
                         text = "Download", 
-                        command = download)
+                        command = download, bg='#567', fg='White')
 
 getDetails = tk.Button(root, text = "Get Details", command=videodetails)
 
@@ -255,7 +278,7 @@ views.grid(row=7,column=1)
 duration.grid(row=8,column=1)
 # downloadProgress.grid(row=9, column=1, pady=5)
 messagebox.showinfo("INFO",
-                        "Console will show the download progress and errors.\n \nDownloading videos higher than 720p requires ffmpeg installed on you computer and download time will depend on computer hardware.")
+                        "Console will show the download progress and Errors.\n \nDownloading videos higher than 720p requires ffmpeg installed on you computer and download time will depend on computer hardware.")
 
 # qualitySelect.grid(row=)
 
